@@ -67,9 +67,6 @@ A mobile application that provides personalized movie recommendations using The 
 
 ## Screenshots
 
-![photo_2024-12-30_11-47-24](https://github.com/user-attachments/assets/69de90c0-201e-414a-8373-fec082bc08bc)
-![photo_2024-12-30_11-47-33](https://github.com/user-attachments/assets/528579b2-13d9-4c3c-a4c4-e88846dd3d35)
-![photo_2024-12-30_11-47-30](https://github.com/user-attachments/assets/abf04e45-7f16-4474-a506-98476ef552c3)
-![photo_2024-12-30_11-47-28](https://github.com/user-attachments/assets/8aae771e-2079-4bca-bdd3-b40f16cf564a)
-![photo_2024-12-30_11-47-36](https://github.com/user-attachments/assets/e63cac97-0dec-4f58-8968-060018f2506d)
-![photo_2024-12-30_11-47-34](https://github.com/user-attachments/assets/b936ac7a-c534-488f-8702-879a1b1b1e0d)
+![photo_2024-12-30_11-47-24](https://github.com/user-attachments/assets/69de90c0-201e-414a-8373-fec082bc08bc)  
+![photo_2024-12-30_11-47-30](https://github.com/user-attachments/assets/abf04e45-7f16-4474-a506-98476ef552c3)   ![photo_2024-12-30_11-47-28](https://github.com/user-attachments/assets/8aae771e-2079-4bca-bdd3-b40f16cf564a)
+![photo_2024-12-30_11-47-36](https://github.com/user-attachments/assets/e63cac97-0dec-4f58-8968-060018f2506d)   ![photo_2024-12-30_11-47-34](https://github.com/user-attachments/assets/b936ac7a-c534-488f-8702-879a1b1b1e0d)
