@@ -54,12 +54,12 @@ class _HomePageState extends State<HomePage> {
             if (recommendedMovie != null) ...[
               RecommendedMovieCard(movie: recommendedMovie!),
             ],
-            SectionTitle(title: 'Most Viewed'),
-            MovieScroll(movies: mostViewed),
             SectionTitle(title: 'Popular'),
             MovieScroll(movies: popular),
             SectionTitle(title: 'Recent'),
             MovieScroll(movies: recent),
+            SectionTitle(title: 'Most Viewed'),
+            MovieScroll(movies: mostViewed),
           ],
         ),
       ),
@@ -137,7 +137,7 @@ class MovieScroll extends StatelessWidget {
                 padding: EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Colors.black.withOpacity(0.4), Colors.transparent], // Lighter gradient
+                    colors: [Colors.black.withOpacity(0.2), Colors.transparent], // Lighter gradient
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
                   ),
