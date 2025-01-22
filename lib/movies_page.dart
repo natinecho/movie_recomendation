@@ -15,11 +15,19 @@ class _MoviesPageState extends State<MoviesPage> {
   int page = 1;
   bool isLoading = false;
   String searchQuery = '';
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     fetchMoviesAndGenres();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> fetchMoviesAndGenres() async {
@@ -92,6 +100,14 @@ class _MoviesPageState extends State<MoviesPage> {
         .toList();
   }
 
+  void _onScroll() {
+    if (_scrollController.position.pixels ==
+            _scrollController.position.maxScrollExtent &&
+        !isLoading) {
+      fetchMoreMovies();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -144,8 +160,7 @@ class _MoviesPageState extends State<MoviesPage> {
                   },
                   child: Container(
                     margin: EdgeInsets.symmetric(horizontal: 5),
-                    padding:
-                        EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                    padding: EdgeInsets.symmetric(vertical: 5, horizontal: 15),
                     decoration: BoxDecoration(
                       color: selectedGenre == genre['id'].toString()
                           ? Colors.blue
@@ -170,6 +185,7 @@ class _MoviesPageState extends State<MoviesPage> {
           // Movie grid
           Expanded(
             child: GridView.builder(
+              controller: _scrollController,
               padding: EdgeInsets.all(10),
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -204,18 +220,13 @@ class _MoviesPageState extends State<MoviesPage> {
             ),
           ),
 
-          // Pagination button
+          // Loading indicator
           if (isLoading)
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Center(child: CircularProgressIndicator()),
             ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: fetchMoreMovies,
-        child: Icon(Icons.add),
-        tooltip: 'Load More Movies',
       ),
     );
   }
