@@ -8,7 +8,7 @@ class LandingPage extends StatelessWidget {
         children: [
           Positioned.fill(
             child: Image.asset(
-              'assets/movie_background.png', // Ensure you have this asset in your project
+              'assets/movie_background.jpg', // Ensure you have this asset in your project
               fit: BoxFit.cover,
             ),
           ),
@@ -56,7 +56,7 @@ class LandingPage extends StatelessWidget {
 
                   // Get Started button
                   ElevatedButton(
-                    onPressed: () => Navigator.pushNamed(context, '/login'), // Adjust the route as needed
+                    onPressed: () => Navigator.pushNamed(context, '/home'), // Adjust the route as needed
                     child: Text("Get Started"),
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),

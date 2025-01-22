@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'movie_detail_page.dart';
-import 'tmdb_service.dart';
+import 'movie_detail.dart';
+import 'TMDB_API.dart';
 
 class MoviesPage extends StatefulWidget {
   @override
@@ -8,6 +8,7 @@ class MoviesPage extends StatefulWidget {
 }
 
 class _MoviesPageState extends State<MoviesPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TMDBService tmdbService = TMDBService();
   List<dynamic> movies = [];
   List<dynamic> genres = [];
@@ -95,127 +96,126 @@ class _MoviesPageState extends State<MoviesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          // Search Bar with Styling
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
-                    spreadRadius: 1,
-                    blurRadius: 5,
+      key: _scaffoldKey,
+      endDrawer: Drawer(
+        child: ListView(
+          children: [
+            Column(
+              children:[ Text('Filter by Genre',
+                  style: TextStyle(
+                      fontSize: 24, fontWeight: FontWeight.bold)),
+          ],),
+            ...genres.map((genre) {
+              return ListTile(
+                title: Text(genre['name']),
+                onTap: () {
+                  setState(() {
+                    selectedGenre = genre['id'].toString();
+                  });
+                  Navigator.of(context).pop();
+                },
+              );
+            }).toList(),
+          ],
+        ),
+      ),
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification scrollInfo) {
+          if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent && !isLoading) {
+            fetchMoreMovies();
+          }
+          return false;
+        },
+        child: Column(
+          children: [
+            // Search Bar and Filter Icon in the body
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(25),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.3),
+                            spreadRadius: 1,
+                            blurRadius: 5,
+                          ),
+                        ],
+                      ),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Search by Title',
+                          border: InputBorder.none,
+                          prefixIcon: Icon(Icons.search, color: Colors.blue),
+                          contentPadding:
+                              EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                        ),
+                        onChanged: (value) {
+                          searchMovies(value);
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  IconButton(
+                    icon: Icon(Icons.filter_list),
+                    onPressed: () {
+                       _scaffoldKey.currentState?.openEndDrawer();
+                    },
                   ),
                 ],
               ),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Search by Title',
-                  border: InputBorder.none,
-                  prefixIcon: Icon(Icons.search, color: Colors.blue),
-                  contentPadding:
-                      EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+            ),
+
+            // Movie grid
+            Expanded(
+              child: GridView.builder(
+                padding: EdgeInsets.all(10),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.7,
                 ),
-                onChanged: (value) {
-                  searchMovies(value);
+                itemCount: filterMoviesByGenre().length,
+                itemBuilder: (context, index) {
+                  final movie = filterMoviesByGenre()[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MovieDetailPage(movieId: movie['id']),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      margin: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: NetworkImage(
+                              "https://image.tmdb.org/t/p/w500${movie['poster_path']}"),
+                          fit: BoxFit.cover,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  );
                 },
               ),
             ),
-          ),
 
-          // Genres as horizontal scrollable buttons
-          Container(
-            padding: EdgeInsets.all(10),
-            height: 50,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: genres.length,
-              itemBuilder: (context, index) {
-                final genre = genres[index];
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedGenre = genre['id'].toString();
-                    });
-                  },
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 5),
-                    padding:
-                        EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-                    decoration: BoxDecoration(
-                      color: selectedGenre == genre['id'].toString()
-                          ? Colors.blue
-                          : Colors.grey[300],
-                      borderRadius: BorderRadius.circular(25),
-                    ),
-                    child: Text(
-                      genre['name'],
-                      style: TextStyle(
-                        color: selectedGenre == genre['id'].toString()
-                            ? Colors.white
-                            : Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          // Movie grid
-          Expanded(
-            child: GridView.builder(
-              padding: EdgeInsets.all(10),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.7,
+            // Pagination button
+            if (isLoading)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Center(child: CircularProgressIndicator()),
               ),
-              itemCount: filterMoviesByGenre().length,
-              itemBuilder: (context, index) {
-                final movie = filterMoviesByGenre()[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            MovieDetailPage(movieId: movie['id']),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    margin: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(
-                            "https://image.tmdb.org/t/p/w500${movie['poster_path']}"),
-                        fit: BoxFit.cover,
-                      ),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          // Pagination button
-          if (isLoading)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(child: CircularProgressIndicator()),
-            ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: fetchMoreMovies,
-        child: Icon(Icons.add),
-        tooltip: 'Load More Movies',
+          ],
+        ),
       ),
     );
   }

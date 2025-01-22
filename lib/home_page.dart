@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'movie_detail_page.dart';
-import 'tmdb_service.dart';
+import 'movie_detail.dart';
+import 'TMDB_API.dart';
 
 class HomePage extends StatefulWidget {
   @override
