@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'landing_page.dart';
 import 'home_page.dart';
 import 'movies_page.dart';
 
@@ -14,8 +13,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
-        '/': (context) => LandingPage(),
-        '/home': (context) => MainPage(), // Main page with bottom navigation
+        '/': (context) => MainPage(), // Main page with bottom navigation
         '/movies': (context) => MoviesPage(),
       },
     );
